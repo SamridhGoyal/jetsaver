@@ -1226,7 +1226,11 @@ const $ = s => document.querySelector(s);
 const inr = n => "₹" + Math.round(n).toLocaleString("en-IN");
 const routeKey = () => st.from + "-" + st.to;
 const has = m => st.pay.includes(m);
-const TODAY = "2026-11-14"; const CAL_END = "2027-11-09";
+const BUILD_DAY = "2026-11-14"; const CAL_END = "2027-11-09";
+// Use the real date in India, so the page never offers dates that have already passed when a refresh was missed.
+const IST_TODAY=(()=>{try{return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return BUILD_DAY}})();
+const TODAY = /^\d{4}-\d\d-\d\d$/.test(IST_TODAY)&&IST_TODAY>BUILD_DAY?IST_TODAY:BUILD_DAY;
+if(st.date<TODAY)st.date=TODAY;
 function addDays(iso, n){const [y,m,d]=iso.split("-").map(Number);const t=new Date(y,m-1,d+n);return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")}
 function dayDiff(a,b){const [y1,m1,d1]=a.split("-").map(Number),[y2,m2,d2]=b.split("-").map(Number);return Math.round((Date.UTC(y2,m2-1,d2)-Date.UTC(y1,m1-1,d1))/864e5)}
 function niceDate(iso){const [y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"})}
